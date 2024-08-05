@@ -8,10 +8,31 @@ router.put("/:id", updateHotel);
 router.delete("/:id", deleteHotel);
 router.post("/buscar", buscarHotelesPorProgramaDestinoYHotel);
 router.post("/buscarT", buscarHotelesPorProgramaDestinoYHotelYhabitacion);
-
+router.post('/temporadas', obtenerTemporadas);
 
 module.exports = (app) => app.use("/hoteles", router);
 
+async function obtenerTemporadas(req, res) {
+    const { fechaInicio, fechaFin } = req.body;
+    const conn = await connect();
+  
+    try {
+      const [resultados] = await conn.query(
+        "SELECT DISTINCT p.nombrePrograma FROM hoteles h JOIN planes p ON h.hotel = p.hotel AND h.nombrePrograma = p.nombrePrograma WHERE (h.FechaInicio <= ?) AND (h.FechaFin >= ?)",
+        [fechaFin, fechaInicio]
+      );
+  
+      const nombresProgramasUnicos = [...new Set(resultados.map(r => r.nombrePrograma))];
+  
+      res.status(200).json(nombresProgramasUnicos);
+    } catch (error) {
+      console.error("Error al obtener temporadas:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+    } finally {
+      if (conn) conn.end();
+    }
+  }
+  
 async function getHoteles(req, res) {
     const conn = await connect();
     try {
