@@ -8,6 +8,8 @@ router.put("/:id", updateHotel);
 router.delete("/:id", deleteHotel);
 router.post("/buscar", buscarHotelesPorProgramaDestinoYHotel);
 router.post("/buscarT", buscarHotelesPorProgramaDestinoYHotelYhabitacion);
+router.post("/buscarN", buscarHotelesPorProgramaDestinoYHotelYNoche);
+
 router.post('/temporadas', obtenerTemporadas);
 
 module.exports = (app) => app.use("/hoteles", router);
@@ -92,6 +94,21 @@ async function deleteHotel(req, res) {
 }
 
 async function buscarHotelesPorProgramaDestinoYHotel(req, res) {
+    const { hotel, nombrePrograma, destino } = req.body; // Obtener los parámetros del cuerpo de la solicitud
+    const conn = await connect();
+    try {
+        // Realizar la búsqueda en la base de datos usando los parámetros recibidos
+        const [rows] = await conn.query('SELECT * FROM hoteles WHERE nombrePrograma = ? AND destino = ? AND hotel = ?', [nombrePrograma, destino, hotel]);
+        // Devolver los resultados de la búsqueda como respuesta
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error al buscar hoteles" });
+    } finally {
+        if (conn) conn.end();
+    }
+}
+async function buscarHotelesPorProgramaDestinoYHotelYNoche(req, res) {
     const { hotel, nombrePrograma, destino, noches } = req.body; // Obtener los parámetros del cuerpo de la solicitud
     const conn = await connect();
     try {
