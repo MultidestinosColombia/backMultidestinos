@@ -109,11 +109,11 @@ async function buscarHotelesPorProgramaDestinoYHotel(req, res) {
     }
 }
 async function buscarHotelesPorProgramaDestinoYHotelYNoche(req, res) {
-    const { hotel, nombrePrograma, destino, noches } = req.body; // Obtener los parámetros del cuerpo de la solicitud
+    const {  pertenece,hotel, nombrePrograma, destino, noches } = req.body; // Obtener los parámetros del cuerpo de la solicitud
     const conn = await connect();
     try {
         // Realizar la búsqueda en la base de datos usando los parámetros recibidos
-        const [rows] = await conn.query('SELECT * FROM hoteles WHERE nombrePrograma = ? AND destino = ? AND hotel = ? AND noches = ?', [nombrePrograma, destino, hotel, noches]);
+        const [rows] = await conn.query('SELECT * FROM hoteles WHERE nombrePrograma = ? AND destino = ? AND hotel = ? AND noches = ? AND pertenece = ?', [nombrePrograma, destino, hotel, noches, pertenece]);
         // Devolver los resultados de la búsqueda como respuesta
         res.status(200).json(rows);
     } catch (error) {
