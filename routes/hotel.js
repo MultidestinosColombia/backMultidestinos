@@ -92,11 +92,11 @@ async function deleteHotel(req, res) {
 }
 
 async function buscarHotelesPorProgramaDestinoYHotel(req, res) {
-    const { hotel, nombrePrograma, destino } = req.body; // Obtener los parámetros del cuerpo de la solicitud
+    const { hotel, nombrePrograma, destino, noches } = req.body; // Obtener los parámetros del cuerpo de la solicitud
     const conn = await connect();
     try {
         // Realizar la búsqueda en la base de datos usando los parámetros recibidos
-        const [rows] = await conn.query('SELECT * FROM hoteles WHERE nombrePrograma = ? AND destino = ? AND hotel = ?', [nombrePrograma, destino, hotel]);
+        const [rows] = await conn.query('SELECT * FROM hoteles WHERE nombrePrograma = ? AND destino = ? AND hotel = ? AND noches = ?', [nombrePrograma, destino, hotel, noches]);
         // Devolver los resultados de la búsqueda como respuesta
         res.status(200).json(rows);
     } catch (error) {
