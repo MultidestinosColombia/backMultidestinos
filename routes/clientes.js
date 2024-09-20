@@ -14,15 +14,16 @@ module.exports = (app) => app.use("/cliente", router);
 async function getCliente(req, res) {
     const conn = await connect();
     try {
-        const [rows] = await conn.query('SELECT id, nombre, ciudad, correo, direccion, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca FROM clientes');
+        const [rows] = await conn.query('SELECT id, nombre, ciudad, correo, direccion, contacto, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca FROM clientes');
         const clientes = rows.map(cliente => {
-            const { id, nombre, ciudad, correo, direccion, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca } = cliente;
+            const { id, nombre, ciudad, correo, direccion, contacto, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca } = cliente;
             return {
                 id,
                 nombre,
                 ciudad,
                 correo,
                 direccion,
+                contacto,
                 telefono,
                 nit,
                 rnt,
@@ -46,11 +47,11 @@ async function getCliente(req, res) {
     }
 }
 async function createCliente(req, res) {
-    const { nombre, ciudad, correo, direccion, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca } = req.body;
+    const { nombre, ciudad, correo, direccion, contacto, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca } = req.body;
     const conn = await connect();
     try {
-        const [result] = await conn.query('INSERT INTO clientes (nombre, ciudad, correo, direccion, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [nombre, ciudad, correo, direccion, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca]);
-        const newCliente = { id: result.insertId, nombre, ciudad, correo, direccion, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca };
+        const [result] = await conn.query('INSERT INTO clientes (nombre, ciudad, correo, direccion, contacto, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [nombre, ciudad, correo, direccion, contacto, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca]);
+        const newCliente = { id: result.insertId, nombre, ciudad, correo, direccion, contacto, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca };
         res.status(201).json(newCliente);
     } catch (error) {
         console.error(error);
@@ -61,11 +62,11 @@ async function createCliente(req, res) {
 }
 async function updateCliente(req, res) {
     const clienteId = parseInt(req.params.id, 10);
-    const { nombre, ciudad, correo, direccion, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca } = req.body;
+    const { nombre, ciudad, correo, direccion, contacto, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca } = req.body;
     const conn = await connect();
     try {
-        await conn.query('UPDATE clientes SET nombre = ?, ciudad = ?, correo = ?, direccion = ?, telefono = ?, nit = ?, rnt = ?, lmc = ?, demas = ?, primerDeposito = ?, segundoDeposito = ?, zona = ?, asesor = ?, tipoBase = ?, porcentajeIva = ?, rteFuente = ?, rteIca = ? WHERE id = ?', [nombre, ciudad, correo, direccion, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca, clienteId]);
-        res.status(200).json({ id: clienteId, nombre, ciudad, correo, direccion, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca });
+        await conn.query('UPDATE clientes SET nombre = ?, ciudad = ?, correo = ?, direccion = ?, contacto = ?, telefono = ?, nit = ?, rnt = ?, lmc = ?, demas = ?, primerDeposito = ?, segundoDeposito = ?, zona = ?, asesor = ?, tipoBase = ?, porcentajeIva = ?, rteFuente = ?, rteIca = ? WHERE id = ?', [nombre, ciudad, correo, direccion, contacto, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca, clienteId]);
+        res.status(200).json({ id: clienteId, nombre, ciudad, correo, direccion, contacto, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error al actualizar el cliente" });
@@ -99,15 +100,16 @@ async function buscarClientePorNombre(req, res) {
 
     const conn = await connect();
     try {
-        const [rows] = await conn.query('SELECT id, nombre, ciudad, correo, direccion, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca FROM clientes WHERE nombre = ?', [nombre]);
+        const [rows] = await conn.query('SELECT id, nombre, ciudad, correo, direccion, contacto, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca FROM clientes WHERE nombre = ?', [nombre]);
         const clientes = rows.map(cliente => {
-            const { id, nombre, ciudad, correo, direccion, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca } = cliente;
+            const { id, nombre, ciudad, correo, direccion, contacto, telefono, nit, rnt, lmc, demas, primerDeposito, segundoDeposito, zona, asesor, tipoBase, porcentajeIva, rteFuente, rteIca } = cliente;
             return {
                 id,
                 nombre,
                 ciudad,
                 correo,
                 direccion,
+                contacto,
                 telefono,
                 nit,
                 rnt,
