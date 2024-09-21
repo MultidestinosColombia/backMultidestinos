@@ -4,11 +4,11 @@ const mysql = require('mysql2/promise');
 async function connect() {
   try {
     const connection = await mysql.createConnection({
-        host: 'roundhouse.proxy.rlwy.net', 
+        host: 'junction.proxy.rlwy.net', 
       user: 'root', 
-      password: "wXBMWAJYeOfeKoYgQgzZdeMKAheTNjvb", 
+      password: "zYqdTzctQdAuebYJpWudWzAqjFCfUwjB", 
       database: 'railway', 
-      port: '40161'
+      port: '15558'
     });
     return connection;
   } catch (error) {
