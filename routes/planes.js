@@ -62,7 +62,7 @@ async function updatePlanBogota(req, res) {
     const { destino,pertenece, nombrePrograma, hotel, plan, baseComisionable, baseTiqueta, acomodacion, fechaBloqueo, vigenciaInicio, vigenciaFinal, incluye, noIncluye, notas } = req.body;
     const conn = await connect();
     try {
-        await conn.query('UPDATE planes SET destino = ?, pertenece =?, nombrePrograma = ?, hotel = ?, plan = ?, baseComisionable = ?, baseTiqueta = ?, acomodacion = ?, fechaBloqueo = ?, vigenciaInicio = ?, vigenciaFinal = ?, incluye = ?, noIncluye = ?, notas = ? WHERE id = ?', [destino, nombrePrograma, hotel, plan, baseComisionable, baseTiqueta, acomodacion, fechaBloqueo, vigenciaInicio, vigenciaFinal, incluye, noIncluye, notas, planId]);
+        await conn.query('UPDATE planes SET destino = ?, pertenece =?, nombrePrograma = ?, hotel = ?, plan = ?, baseComisionable = ?, baseTiqueta = ?, acomodacion = ?, fechaBloqueo = ?, vigenciaInicio = ?, vigenciaFinal = ?, incluye = ?, noIncluye = ?, notas = ? WHERE id = ?', [destino, nombrePrograma, pertenece, hotel, plan, baseComisionable, baseTiqueta, acomodacion, fechaBloqueo, vigenciaInicio, vigenciaFinal, incluye, noIncluye, notas, planId]);
         res.status(200).json({ success: "Plan actualizado correctamente" });
     } catch (error) {
         console.error(error);
