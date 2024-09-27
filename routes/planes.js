@@ -47,7 +47,7 @@ async function createPlanBogota(req, res) {
     const { destino, pertenece, nombrePrograma, hotel, plan, baseComisionable, baseTiqueta, acomodacion, fechaBloqueo, vigenciaInicio, vigenciaFinal, incluye, noIncluye, notas } = req.body;
     const conn = await connect();
     try {
-        await conn.query('INSERT INTO planes (destino, pertenece, nombrePrograma, hotel, plan, baseComisionable, baseTiqueta, acomodacion, fechaBloqueo, vigenciaInicio, vigenciaFinal, incluye, noIncluye, notas) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [destino, nombrePrograma, hotel, plan, baseComisionable, baseTiqueta, acomodacion, fechaBloqueo, vigenciaInicio, vigenciaFinal, incluye, noIncluye, notas]);
+        await conn.query('INSERT INTO planes (destino, pertenece, nombrePrograma, hotel, plan, baseComisionable, baseTiqueta, acomodacion, fechaBloqueo, vigenciaInicio, vigenciaFinal, incluye, noIncluye, notas) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [destino, pertenece,  nombrePrograma, hotel, plan, baseComisionable, baseTiqueta, acomodacion, fechaBloqueo, vigenciaInicio, vigenciaFinal, incluye, noIncluye, notas]);
         res.status(201).json({ success: "Plan creado correctamente" });
     } catch (error) {
         console.error(error);
