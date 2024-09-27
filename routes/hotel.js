@@ -51,10 +51,38 @@ async function getHoteles(req, res) {
 
 
 async function createHotel(req, res) {
-    const { hotel, nombrePrograma, destino } = req.body;
+    const { 
+        pertenece, 
+        destino, 
+        nombrePrograma, 
+        hotel, 
+        plan, 
+        noches, 
+        tipoHabitacion, 
+        sencilla, 
+        doble, 
+        triple, 
+        cuadruple, 
+        quintuple, 
+        sextuple, 
+        niño, 
+        nocheAdicionalsencilla, 
+        nocheAdicionaldoble, 
+        nocheAdicionaltriple, 
+        nocheAdicionalcuadruple, 
+        nocheAdicionalniño, 
+        incluye, 
+        noIncluye, 
+        FechaInicio, 
+        FechaFin 
+    } = req.body;
+
     const conn = await connect();
     try {
-        await conn.query('INSERT INTO hoteles (hotel, nombrePrograma, destino) VALUES (?, ?, ?)', [hotel, nombrePrograma, destino]);
+        await conn.query(
+            'INSERT INTO hoteles (pertenece, destino, nombrePrograma, hotel, plan, noches, tipoHabitacion, sencilla, doble, triple, cuadruple, quintuple, sextuple, niño, nocheAdicionalsencilla, nocheAdicionaldoble, nocheAdicionaltriple, nocheAdicionalcuadruple, nocheAdicionalniño, incluye, noIncluye, FechaInicio, FechaFin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [pertenece, destino, nombrePrograma, hotel, plan, noches, tipoHabitacion, sencilla, doble, triple, cuadruple, quintuple, sextuple, niño, nocheAdicionalsencilla, nocheAdicionaldoble, nocheAdicionaltriple, nocheAdicionalcuadruple, nocheAdicionalniño, incluye, noIncluye, FechaInicio, FechaFin]
+        );
         res.status(201).json({ success: "Hotel creado correctamente" });
     } catch (error) {
         console.error(error);
@@ -66,10 +94,38 @@ async function createHotel(req, res) {
 
 async function updateHotel(req, res) {
     const hotelId = parseInt(req.params.id, 10);
-    const { hotel, nombrePrograma, destino } = req.body;
+    const { 
+        pertenece, 
+        destino, 
+        nombrePrograma, 
+        hotel, 
+        plan, 
+        noches, 
+        tipoHabitacion, 
+        sencilla, 
+        doble, 
+        triple, 
+        cuadruple, 
+        quintuple, 
+        sextuple, 
+        niño, 
+        nocheAdicionalsencilla, 
+        nocheAdicionaldoble, 
+        nocheAdicionaltriple, 
+        nocheAdicionalcuadruple, 
+        nocheAdicionalniño, 
+        incluye, 
+        noIncluye, 
+        FechaInicio, 
+        FechaFin 
+    } = req.body;
+
     const conn = await connect();
     try {
-        await conn.query('UPDATE hoteles SET hotel = ?, nombrePrograma = ?, destino = ? WHERE id = ?', [hotel, nombrePrograma, destino, hotelId]);
+        await conn.query(
+            'UPDATE hoteles SET pertenece = ?, destino = ?, nombrePrograma = ?, hotel = ?, plan = ?, noches = ?, tipoHabitacion = ?, sencilla = ?, doble = ?, triple = ?, cuadruple = ?, quintuple = ?, sextuple = ?, niño = ?, nocheAdicionalsencilla = ?, nocheAdicionaldoble = ?, nocheAdicionaltriple = ?, nocheAdicionalcuadruple = ?, nocheAdicionalniño = ?, incluye = ?, noIncluye = ?, FechaInicio = ?, FechaFin = ? WHERE id = ?',
+            [pertenece, destino, nombrePrograma, hotel, plan, noches, tipoHabitacion, sencilla, doble, triple, cuadruple, quintuple, sextuple, niño, nocheAdicionalsencilla, nocheAdicionaldoble, nocheAdicionaltriple, nocheAdicionalcuadruple, nocheAdicionalniño, incluye, noIncluye, FechaInicio, FechaFin, hotelId]
+        );
         res.status(200).json({ success: "Hotel actualizado correctamente" });
     } catch (error) {
         console.error(error);
