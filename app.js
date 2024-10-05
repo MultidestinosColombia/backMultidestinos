@@ -9,6 +9,7 @@ const cotizacion = require ("./routes/cotizacion.js")
 const transporte = require ("./routes/transporte.js")
 const liquidacion = require ("./routes/liquidacion.js")
 const pasajero = require ("./routes/pasajero.js")
+const impuestosLiq = require ("./routes/impuestosLiq.js")
 const cors = require ("cors")
 const express =require('express');
 const app = express();
@@ -29,7 +30,7 @@ tiquete(app)
 cañoCristal(app)
 liquidacion(app)
 pasajero(app)
-
+impuestosLiq(app)
 
 app.post('/', async (req, res) => {
     try {
