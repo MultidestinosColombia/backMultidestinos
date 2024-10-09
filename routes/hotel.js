@@ -196,33 +196,21 @@ async function buscarHotelesPorProgramaDestinoYHotelYhabitacion(req, res) {
     }
 }
 async function buscarProgramasPorHotel(req, res) {
-
     const { pertenece, hotel, destino, noches } = req.body;
   
-    const conn = await connect(); // Asumo que tienes una función 'connect' que establece la conexión a la base de datos.
+    const conn = await connect();
   
     try {
-  
       const [rows] = await conn.query(
-  
-        'SELECT nombrePrograma, FechaInicio, FechaFin FROM hoteles WHERE destino = ? AND hotel = ? AND noches = ? AND pertenece = ?',
-  
+        'SELECT * FROM hoteles WHERE destino = ? AND hotel = ? AND noches = ? AND pertenece = ?', // Cambia esto a SELECT *
         [destino, hotel, noches, pertenece]
-  
       );
   
       res.status(200).json(rows);
-  
     } catch (error) {
-  
       console.error(error);
-  
       res.status(500).json({ error: "Error al buscar programas" });
-  
     } finally {
-  
-      if (conn) conn.end(); // Cierra la conexión a la base de datos al finalizar.
-  
+      if (conn) conn.end();
     }
-  
   }
