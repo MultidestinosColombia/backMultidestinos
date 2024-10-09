@@ -9,6 +9,7 @@ router.delete("/:id", deleteHotel);
 router.post("/buscar", buscarHotelesPorProgramaDestinoYHotel);
 router.post("/buscarT", buscarHotelesPorProgramaDestinoYHotelYhabitacion);
 router.post("/buscarN", buscarHotelesPorProgramaDestinoYHotelYNoche);
+router.post("/buscarH", buscarProgramasPorHotel);
 
 router.post('/temporadas', obtenerTemporadas);
 
@@ -194,3 +195,34 @@ async function buscarHotelesPorProgramaDestinoYHotelYhabitacion(req, res) {
         if (conn) conn.end();
     }
 }
+async function buscarProgramasPorHotel(req, res) {
+
+    const { pertenece, hotel, destino, noches } = req.body;
+  
+    const conn = await connect(); // Asumo que tienes una función 'connect' que establece la conexión a la base de datos.
+  
+    try {
+  
+      const [rows] = await conn.query(
+  
+        'SELECT nombrePrograma, FechaInicio, FechaFin FROM hoteles WHERE destino = ? AND hotel = ? AND noches = ? AND pertenece = ?',
+  
+        [destino, hotel, noches, pertenece]
+  
+      );
+  
+      res.status(200).json(rows);
+  
+    } catch (error) {
+  
+      console.error(error);
+  
+      res.status(500).json({ error: "Error al buscar programas" });
+  
+    } finally {
+  
+      if (conn) conn.end(); // Cierra la conexión a la base de datos al finalizar.
+  
+    }
+  
+  }
