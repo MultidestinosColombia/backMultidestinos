@@ -196,16 +196,20 @@ async function buscarHotelesPorProgramaDestinoYHotelYhabitacion(req, res) {
     }
 }
 async function buscarProgramasPorHotel(req, res) {
+    console.log("Recibida petición:", req.body); 
     const { pertenece, hotel, destino, noches } = req.body;
   
     const conn = await connect();
   
     try {
-      const [rows] = await conn.query(
-        'SELECT * FROM hoteles WHERE destino = ? AND hotel = ? AND noches = ? AND pertenece = ?', // Cambia esto a SELECT *
-        [destino, hotel, noches, pertenece]
-      );
+      // Imprime la consulta SQL con los valores de los parámetros
+      const query = 'SELECT * FROM hoteles WHERE hotel = ? AND destino = ? AND noches = ? AND pertenece = ?';
+      const values = [hotel, destino, noches, pertenece];
+      console.log("Consulta SQL:", query, values); 
   
+      const [rows] = await conn.query(query, values);
+  
+      console.log("Resultados de la consulta:", rows); // Imprime los resultados
       res.status(200).json(rows);
     } catch (error) {
       console.error(error);
