@@ -8,6 +8,7 @@ router.post("/c", createCotizacionC);
 router.put("/:id", updateCotizacion);
 router.delete("/:id", deleteCotizacion);
 router.get("/:idCotizacion", getCotizacionesPorIdCotizacion);
+router.get("/totales-por-usuario", getCotizacionesTotalesPorUsuario); 
 module.exports = (app) => app.use("/cotizacion", router);
 async function getCotizaciones(req, res) {
     const conn = await connect();
@@ -134,3 +135,49 @@ async function getCotizacionesPorIdCotizacion(req, res) {
         if (conn) conn.end();
     }
 }
+
+
+//GRAFICOS 
+
+async function getCotizacionesTotalesPorUsuario(req, res) {
+    const conn = await connect();
+    try {
+      const fechaInicio = req.query.fechaInicio || '1000-01-01'; // Si no se proporciona, usar una fecha muy antigua
+      const fechaFin = req.query.fechaFin || '9999-12-31';   // Si no se proporciona, usar una fecha muy futura
+  
+      const query = `
+        SELECT 
+          CreadorCotizacion AS usuario,
+          MONTH(fechaCreacion) AS mes,
+          COUNT(*) AS total
+        FROM cotizacion
+        WHERE fechaCreacion BETWEEN ? AND ?
+        GROUP BY CreadorCotizacion, MONTH(fechaCreacion)
+        ORDER BY CreadorCotizacion, MONTH(fechaCreacion)
+      `;
+      const [rows] = await conn.query(query, [fechaInicio, fechaFin]);
+  
+      // Formatear los datos para la gráfica
+      const data = {};
+      rows.forEach(row => {
+        const { usuario, mes, total } = row;
+        if (!data[usuario]) {
+          data[usuario] = [];
+        }
+        data[usuario].push({ mes, total });
+      });
+  
+      // Convertir el objeto a un array
+      const result = Object.keys(data).map(usuario => ({
+        usuario,
+        datos: data[usuario]
+      }));
+  
+      res.status(200).json(result);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Error interno del servidor" });
+    } finally {
+      if (conn) conn.end();
+    }
+  }
