@@ -193,26 +193,28 @@ async function getCotizacionesTotalesPorUsuario(req, res) {
     const conn = await connect();
     try {
       // Obtener fechas de inicio y fin del cuerpo de la petición
-      const { fechaInicio, fechaFin } = req.body; 
+      const { fechaInicio, fechaFin } = req.body;
   
       // Validar que se recibieron las fechas
       if (!fechaInicio || !fechaFin) {
         return res.status(400).json({ error: "Se requieren las fechas de inicio y fin" });
       }
   
+      // Modificar la consulta para que agrupe por cliente y mes
       const query = `
         SELECT 
-          CreadorCotizacion AS usuario,
+          cliente,  -- Suponiendo que 'cliente' es el nombre de la columna que tiene el nombre del cliente
           MONTH(fechaCreacion) AS mes,
           COUNT(*) AS total
         FROM cotizacion
         WHERE fechaCreacion BETWEEN ? AND ?
-        GROUP BY CreadorCotizacion, MONTH(fechaCreacion)
-        ORDER BY CreadorCotizacion, MONTH(fechaCreacion)
+        GROUP BY cliente, MONTH(fechaCreacion)
+        ORDER BY cliente, MONTH(fechaCreacion)
       `;
+      
       const [rows] = await conn.query(query, [fechaInicio, fechaFin]);
   
-      // Formatear los datos para la gráfica (igual que antes)
+      // Formatear los datos para la gráfica
       const data = {};
       rows.forEach(row => {
         const { cliente, mes, total } = row;
@@ -222,11 +224,12 @@ async function getCotizacionesTotalesPorUsuario(req, res) {
         data[cliente].push({ mes, total });
       });
   
-      const result = Object.keys(data).map(usuario => ({
-        usuario,
-        datos: data[usuario]
+      const result = Object.keys(data).map(cliente => ({
+        cliente, // Cambié de 'usuario' a 'cliente'
+        datos: data[cliente]
       }));
   
+      // Enviar el resultado en formato JSON
       res.status(200).json(result);
     } catch (error) {
       console.error(error);
@@ -235,3 +238,4 @@ async function getCotizacionesTotalesPorUsuario(req, res) {
       if (conn) conn.end();
     }
   }
+  
