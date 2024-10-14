@@ -9,6 +9,9 @@ router.put("/:id", updateCotizacion);
 router.delete("/:id", deleteCotizacion);
 router.get("/:idCotizacion", getCotizacionesPorIdCotizacion);
 router.post("/totales-por-usuario", getCotizacionesTotalesPorUsuario);
+router.post("/totales-por-cliente", getCotizacionesTotalesPorCliente);
+
+
 module.exports = (app) => app.use("/cotizacion", router);
 async function getCotizaciones(req, res) {
     const conn = await connect();
@@ -170,6 +173,53 @@ async function getCotizacionesTotalesPorUsuario(req, res) {
           data[usuario] = [];
         }
         data[usuario].push({ mes, total });
+      });
+  
+      const result = Object.keys(data).map(usuario => ({
+        usuario,
+        datos: data[usuario]
+      }));
+  
+      res.status(200).json(result);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Error interno del servidor" });
+    } finally {
+      if (conn) conn.end();
+    }
+  }
+
+  async function getCotizacionesTotalesPorCliente(req, res) {
+    const conn = await connect();
+    try {
+      // Obtener fechas de inicio y fin del cuerpo de la petición
+      const { fechaInicio, fechaFin } = req.body; 
+  
+      // Validar que se recibieron las fechas
+      if (!fechaInicio || !fechaFin) {
+        return res.status(400).json({ error: "Se requieren las fechas de inicio y fin" });
+      }
+  
+      const query = `
+        SELECT 
+          CreadorCotizacion AS usuario,
+          MONTH(fechaCreacion) AS mes,
+          COUNT(*) AS total
+        FROM cotizacion
+        WHERE fechaCreacion BETWEEN ? AND ?
+        GROUP BY CreadorCotizacion, MONTH(fechaCreacion)
+        ORDER BY CreadorCotizacion, MONTH(fechaCreacion)
+      `;
+      const [rows] = await conn.query(query, [fechaInicio, fechaFin]);
+  
+      // Formatear los datos para la gráfica (igual que antes)
+      const data = {};
+      rows.forEach(row => {
+        const { cliente, mes, total } = row;
+        if (!data[cliente]) {
+          data[cliente] = [];
+        }
+        data[cliente].push({ mes, total });
       });
   
       const result = Object.keys(data).map(usuario => ({
