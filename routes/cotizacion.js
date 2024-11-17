@@ -10,6 +10,7 @@ router.delete("/:id", deleteCotizacion);
 router.get("/:idCotizacion", getCotizacionesPorIdCotizacion);
 router.post("/totales-por-usuario", getCotizacionesTotalesPorUsuario);
 router.post("/totales-por-cliente", getCotizacionesTotalesPorCliente);
+router.post("/:idCotizacion", updateCotizacionStatus);
 
 
 module.exports = (app) => app.use("/cotizacion", router);
@@ -188,7 +189,22 @@ async function getCotizacionesTotalesPorUsuario(req, res) {
       if (conn) conn.end();
     }
   }
-
+  async function updateCotizacionStatus(req, res) {
+    const { idCotizacion } = req.params; // Obtener el idCotizacion de los parámetros de la solicitud
+    const { status } = req.body; // Obtener el nuevo estado del cuerpo de la solicitud
+  
+    const conn = await connect();
+    try {
+      // Actualizar el estado de la cotización en la base de datos
+      await conn.query('UPDATE cotizacion SET status = ? WHERE idCotizacion = ?', [status, idCotizacion]);
+      res.status(200).json({ success: "Estado de la cotización actualizado correctamente" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Error al actualizar el estado de la cotización" });
+    } finally {
+      if (conn) conn.end();
+    }
+  }
   async function getCotizacionesTotalesPorCliente(req, res) {
     const conn = await connect();
     try {
