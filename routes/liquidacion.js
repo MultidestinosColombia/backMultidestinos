@@ -62,10 +62,12 @@ async function createLiquidacion(req, res) {
 }
 
 async function updateLiquidacion(req, res) {
-    const liquidacionId = parseInt(req.params.id.replace('LIQ-', ''), 10);
+    const liquidacionId = req.params.id; // No necesitas convertirlo a número
     const conn = await connect();
     try {
-        await conn.query('UPDATE liquidacion SET ? WHERE idLiquidacion  = ?', [req.body, liquidacionId]);
+        const query = `UPDATE liquidacion SET ? WHERE idLiquidacion = '${liquidacionId}'`; // Encierra liquidacionId entre comillas simples
+        console.log("Consulta SQL:", query); 
+        await conn.query(query, [req.body]);
         res.status(200).json({ success: "Liquidación actualizada correctamente" });
     } catch (error) {
         console.error(error);
@@ -74,7 +76,6 @@ async function updateLiquidacion(req, res) {
         if (conn) conn.end();
     }
 }
-
 async function deleteLiquidacion(req, res) {
     const liquidacionId = parseInt(req.params.id, 10); 
     const conn = await connect();
