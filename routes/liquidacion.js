@@ -62,7 +62,7 @@ async function createLiquidacion(req, res) {
 }
 
 async function updateLiquidacion(req, res) {
-    const liquidacionId = parseInt(req.params.id, 10); 
+    const liquidacionId = parseInt(req.params.id.replace('LIQ-', ''), 10);
     const conn = await connect();
     try {
         await conn.query('UPDATE liquidacion SET ? WHERE idLiquidacion  = ?', [req.body, liquidacionId]);
