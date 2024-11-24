@@ -65,7 +65,7 @@ async function updateLiquidacion(req, res) {
     const liquidacionId = parseInt(req.params.id, 10); 
     const conn = await connect();
     try {
-        await conn.query('UPDATE liquidacion SET ? WHERE id = ?', [req.body, liquidacionId]);
+        await conn.query('UPDATE liquidacion SET ? WHERE idLiquidacion  = ?', [req.body, liquidacionId]);
         res.status(200).json({ success: "Liquidación actualizada correctamente" });
     } catch (error) {
         console.error(error);
