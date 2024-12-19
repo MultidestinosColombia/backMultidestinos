@@ -11,6 +11,8 @@ const liquidacion = require ("./routes/liquidacion.js")
 const pasajero = require ("./routes/pasajero.js")
 const impuestosLiq = require ("./routes/impuestosLiq.js")
 const impuestosCot = require ("./routes/impuestos_cot.js")
+
+const costosHotel = require ("./routes/costosHotel.js")
 const cors = require ("cors")
 const express =require('express');
 const app = express();
@@ -20,6 +22,7 @@ const connect = require('./database.js');
 require('dotenv').config();
 app.use(express.json());
 app.use(cors());
+costosHotel(app)
 user(app)
 planes(app)
 clientes(app)
