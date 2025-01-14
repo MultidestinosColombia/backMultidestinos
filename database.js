@@ -4,9 +4,9 @@ const mysql = require('mysql2/promise');
 async function connect() {
   try {
     const connection = await mysql.createConnection({
-      host: 'junction.proxy.rlwy.net', 
+      host: 'autorack.proxy.rlwy.net', 
       user: 'root', 
-      password: "fetMVUVTNxuoHyJBZAtVUMoeaTYuPwgF", 
+      password: "JvaumVzNHTmTVNrTbkvOJQLBeYoQlIjS", 
       database: 'railway', 
       port: '25553'
     });
