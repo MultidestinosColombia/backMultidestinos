@@ -8,7 +8,7 @@ async function connect() {
       user: 'root', 
       password: "JvaumVzNHTmTVNrTbkvOJQLBeYoQlIjS", 
       database: 'railway', 
-      port: '25553'
+      port: '52412'
     });
     return connection;
   } catch (error) {
