@@ -39,7 +39,7 @@ async function createImpuesto(req, res) {
 }
 
 async function updateImpuesto(req, res) {
-  const impuestoId = req.params.id; // Asumiendo que 'id' es el identificador del impuesto
+  const impuestoId = req.params.id; 
   const conn = await connect();
   try {
     await conn.query('UPDATE ImpuesCañoCristal SET ? WHERE id = ?', [req.body, impuestoId]);
