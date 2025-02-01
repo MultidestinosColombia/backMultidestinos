@@ -559,8 +559,8 @@ async function obtenerTransportesPorParametros(req, res) {
 
         // Consulta con filtro por los 5 parámetros
         const [rows] = await conn.query(
-            'SELECT * FROM transportes WHERE pertenece = ? AND destino = ? AND nombrePrograma = ? AND hotel = ? AND noches = ? AND tipoHabitacion = ?',
-            [pertenece, destino, nombrePrograma, hotel, noches, tipoHabitacion]
+            'SELECT * FROM transportes WHERE pertenece = ? AND destino = ? AND nombrePrograma = ? AND hotel = ? AND noches = ? ',
+            [pertenece, destino, nombrePrograma, hotel, noches]
         );
 
         res.status(200).json(rows);
