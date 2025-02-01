@@ -552,15 +552,15 @@ router.post('/procesar-lote', async (req, res) => {
 });
 async function obtenerTransportesPorParametros(req, res) {
     // Recibir los 5 parámetros (siempre se esperan)
-    const { pertenece, destino, nombrePrograma, hotel, tipoHabitacion } = req.query;
+    const { pertenece, destino, nombrePrograma, hotel, tipoHabitacion, noches } = req.query;
 
     try {
         const conn = await connect();
 
         // Consulta con filtro por los 5 parámetros
         const [rows] = await conn.query(
-            'SELECT * FROM transportes WHERE pertenece = ? AND destino = ? AND nombrePrograma = ? AND hotel = ? AND tipoHabitacion = ?',
-            [pertenece, destino, nombrePrograma, hotel, tipoHabitacion]
+            'SELECT * FROM transportes WHERE pertenece = ? AND destino = ? AND nombrePrograma = ? AND hotel = ? AND noches = ? AND tipoHabitacion = ?',
+            [pertenece, destino, nombrePrograma, hotel, noches, tipoHabitacion]
         );
 
         res.status(200).json(rows);
