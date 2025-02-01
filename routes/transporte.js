@@ -7,6 +7,7 @@ router.post("/", createTransporte);
 router.put("/:id", updateTransporte);
 router.delete("/:id", deleteTransporte);
 router.get("/buscar", buscarTransporte);
+router.get("/por-parametros", obtenerTransportesPorParametros);
 module.exports = (app) => app.use("/transporte", router);
 
 async function getTransporte(req, res) {
@@ -214,6 +215,27 @@ async function buscarTransporte(req, res) {
             };
         });
         res.status(200).json(transportes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+}
+
+async function obtenerTransportesPorParametros(req, res) {
+    // Recibir los 5 parámetros (siempre se esperan)
+    const { pertenece, destino, nombrePrograma, hotel, tipoHabitacion } = req.query;
+
+    try {
+        const conn = await connect();
+
+        // Consulta con filtro por los 5 parámetros
+        const [rows] = await conn.query(
+            'SELECT * FROM transportes WHERE pertenece = ? AND destino = ? AND nombrePrograma = ? AND hotel = ? AND tipoHabitacion = ?',
+            [pertenece, destino, nombrePrograma, hotel, tipoHabitacion]
+        );
+
+        res.status(200).json(rows);
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error interno del servidor" });
