@@ -125,7 +125,7 @@ async function updateHotel(req, res) {
     try {
         await conn.query(
             'UPDATE hoteles SET pertenece = ?, destino = ?, nombrePrograma = ?, hotel = ?, plan = ?, noches = ?, tipoHabitacion = ?, sencilla = ?, doble = ?, triple = ?, cuadruple = ?, quintuple = ?, sextuple = ?, niño = ?, nocheAdicionalsencilla = ?, nocheAdicionaldoble = ?, nocheAdicionaltriple = ?, nocheAdicionalcuadruple = ?, nocheAdicionalniño = ?, incluye = ?, noIncluye = ?, FechaInicio = ?, FechaFin = ? WHERE id = ?',
-            [pertenece, destino, nombrePrograma, hotel, plan, noches, tipoHabitacion, sencilla, doble, triple, cuadruple, quintuple, sextuple, niño, nocheAdicionalsencilla, nocheAdicionaldoble, nocheAdicionaltriple, nocheAdicionalcuadruple, nocheAdicionalniño, incluye, noIncluye, FechaInicio, FechaFin, hotelId]
+            [pertenece, destino, nombrePrograma, hotel, plan, noches, tipoHabitacion, sencilla, doble, triple, cuadruple, quintuple, sextuple, niño,  nocheAdicionalsencilla, nocheAdicionaldoble, nocheAdicionaltriple, nocheAdicionalcuadruple, nocheAdicionalniño, incluye, noIncluye, FechaInicio, FechaFin, hotelId]
         );
         res.status(200).json({ success: "Hotel actualizado correctamente" });
     } catch (error) {
