@@ -392,28 +392,23 @@ async function buscarTransporte(req, res) {
 //-------------------------------------------------------------- transportes ------------------------------------------------------------------------------------//
 // Endpoint para actualizar transportes existentes
 router.put('/actualizar/:id', async (req, res) => {
-    const transporteId = parseInt(req.params.id, 10); // Obtener el ID del transporte desde los parámetros de la URL
-    const datosActualizacion = req.body; // Obtener los datos de actualización desde el cuerpo de la solicitud
+    const transporteId = parseInt(req.params.id, 10);
+    const datosActualizacion = req.body;
 
-    // Validación de datos de actualización
     if (!datosActualizacion || Object.keys(datosActualizacion).length === 0) {
         return res.status(400).json({ mensaje: "Datos de actualización no proporcionados" });
     }
 
-    // Verificar conexión
-    const conn = await connect();
-    if (!conn) {
-        return res.status(500).json({ mensaje: "Error de conexión a la base de datos" });
-    }
-
+    let conn;
     try {
-        // Construir la consulta SQL dinámicamente
+        conn = await connect();
+        if (!conn) throw new Error("Error de conexión a la base de datos");
+
+        // Construcción de consulta SQL dinámica
         const campos = Object.keys(datosActualizacion).map(campo => `${campo} = ?`).join(', ');
         const valores = [...Object.values(datosActualizacion), transporteId];
 
         const consultaSQL = `UPDATE transportes SET ${campos} WHERE id = ?`;
-        console.log(consultaSQL, valores); // Imprime la consulta SQL para depuración
-
         const [result] = await conn.query(consultaSQL, valores);
 
         if (result.affectedRows === 0) {
@@ -422,130 +417,82 @@ router.put('/actualizar/:id', async (req, res) => {
 
         res.status(200).json({ mensaje: "Transporte actualizado correctamente" });
     } catch (error) {
-        console.error("Error al procesar la solicitud: ", error);
-        res.status(500).json({
-            mensaje: "Error al actualizar el transporte",
-            error: error.message,
-            stack: error.stack
-        });
+        console.error("Error al actualizar el transporte: ", error);
+        res.status(500).json({ mensaje: "Error al actualizar el transporte", error: error.message });
     } finally {
-        if (conn) conn.end();
+        if (conn) await conn.end();
     }
 });
 
 // Endpoint para procesar lotes de transportes
 router.post('/procesar-lote', async (req, res) => {
     const { transportes } = req.body;
-    let conn = null;
-
     if (!transportes || !Array.isArray(transportes)) {
-        return res.status(400).json({ mensaje: "Datos no válidos. Se espera un arreglo de transportes." });
+        return res.status(400).json({ mensaje: "Se espera un arreglo de transportes." });
     }
 
+    let conn;
     try {
         conn = await connect();
+        if (!conn) throw new Error("Error de conexión a la base de datos");
+
         await conn.beginTransaction();
 
         const batchSize = 100; // Tamaño del lote
-        const totalLotes = Math.ceil(transportes.length / batchSize);
-        let updatedCount = 0;
-        let createdCount = 0;
+        let updatedCount = 0, createdCount = 0;
 
-        for (let i = 0; i < totalLotes; i++) {
-            const lote = transportes.slice(i * batchSize, (i + 1) * batchSize);
-            const promises = lote.map(async (transporte) => {
-                const transporteProcesado = {
-                    ...transporte,
-                    sencilla_ImpuestoHotel: Number(transporte.sencilla_ImpuestoHotel) || "",
-                    doble_ImpuestoHotel: Number(transporte.doble_ImpuestoHotel) || "",
-                    triple_ImpuestoHotel: Number(transporte.triple_ImpuestoHotel) || "",
-                    cuadruple_ImpuestoHotel: Number(transporte.cuadruple_ImpuestoHotel) || "",
-                    quintuple_ImpuestoHotel: Number(transporte.quintuple_ImpuestoHotel) || "",
-                    sextuple_ImpuestoHotel: Number(transporte.sextuple_ImpuestoHotel) || "",
-                    niño_ImpuestoHotel: Number(transporte.niño_ImpuestoHotel) || "",
-                    sencilla_ImpuestoIngr: Number(transporte.sencilla_ImpuestoIngr) || "",
-                    doble_ImpuestoIngr: Number(transporte.doble_ImpuestoIngr) || "",
-                    triple_ImpuestoIngr: Number(transporte.triple_ImpuestoIngr) || "",
-                    cuadruple_ImpuestoIngr: Number(transporte.cuadruple_ImpuestoIngr) || "",
-                    quintuple_ImpuestoIngr: Number(transporte.quintuple_ImpuestoIngr) || "",
-                    sextuple_ImpuestoIngr: Number(transporte.sextuple_ImpuestoIngr) || "",
-                    niño_ImpuestoIngr: Number(transporte.niño_ImpuestoIngr) || "",
-                    sencilla_Impoconsumo: Number(transporte.sencilla_Impoconsumo) || "",
-                    doble_Impoconsumo: Number(transporte.doble_Impoconsumo) || "",
-                    triple_Impoconsumo: Number(transporte.triple_Impoconsumo) || "",
-                    cuadruple_Impoconsumo: Number(transporte.cuadruple_Impoconsumo) || "",
-                    quintuple_Impoconsumo: Number(transporte.quintuple_Impoconsumo) || "",
-                    sextuple_Impoconsumo: Number(transporte.sextuple_Impoconsumo) || "",
-                    niño_Impoconsumo: Number(transporte.niño_Impoconsumo) || "",
-                    combus: transporte.combus != null ? String(transporte.combus) : null,
-                    tasa: transporte.tasa != null ? String(transporte.tasa) : null,
-                    iva: transporte.iva != null ? String(transporte.iva) : null,
-                    ta: transporte.ta != null ? String(transporte.ta) : null,
-                    ivaTa: transporte.ivaTa != null ? String(transporte.ivaTa) : null,
-                    otros: transporte.otros != null ? String(transporte.otros) : null,
-                    total: Number(transporte.total) || "",
-                    porcionTerrestreBaja: Number(transporte.porcionTerrestreBaja) || "",
-                    porcionTerrestreAlta: Number(transporte.porcionTerrestreAlta) || "",
-                    creadorPor: transporte.creadorPor != null ? String(transporte.creadorPor) : null,
-                    fechaCreacion: transporte.fechaCreacion != null ? new Date(transporte.fechaCreacion) : null,
-                };
+        for (let i = 0; i < transportes.length; i += batchSize) {
+            const lote = transportes.slice(i, i + batchSize);
+            
+            // Dividir en actualizaciones y creaciones
+            const idsExistentes = lote.filter(t => t.id).map(t => t.id);
+            let existentes = [];
 
-                if (transporte.id) {
-                    const [existingTransporteRows] = await conn.query('SELECT * FROM transportes WHERE id = ?', [transporte.id]);
-                    const existingTransporte = existingTransporteRows[0];
+            if (idsExistentes.length > 0) {
+                const [rows] = await conn.query(`SELECT id FROM transportes WHERE id IN (?)`, [idsExistentes]);
+                existentes = rows.map(row => row.id);
+            }
 
-                    if (existingTransporte) {
-                        await conn.query('UPDATE transportes SET ? WHERE id = ?', [transporteProcesado, transporte.id]);
-                        updatedCount++;
-                    } else {
-                        const { id, ...transporteData } = transporteProcesado;
-                        await conn.query('INSERT INTO transportes SET ?', [transporteData]);
-                        createdCount++;
-                    }
-                } else {
-                    const { id, ...transporteData } = transporteProcesado;
-                    await conn.query('INSERT INTO transportes SET ?', [transporteData]);
-                    createdCount++;
-                }
-            });
+            const actualizaciones = lote.filter(t => existentes.includes(t.id));
+            const nuevasInserciones = lote.filter(t => !existentes.includes(t.id));
 
-            await Promise.all(promises); // Esperar a que todos los transportes del lote sean procesados
+            // Procesar actualizaciones en lote
+            if (actualizaciones.length > 0) {
+                const updateQueries = actualizaciones.map(t => {
+                    const id = t.id;
+                    delete t.id;
+                    return conn.query(`UPDATE transportes SET ? WHERE id = ?`, [t, id]);
+                });
+                await Promise.all(updateQueries);
+                updatedCount += actualizaciones.length;
+            }
+
+            // Procesar nuevas inserciones en lote
+            if (nuevasInserciones.length > 0) {
+                await conn.query(`INSERT INTO transportes SET ?`, nuevasInserciones);
+                createdCount += nuevasInserciones.length;
+            }
         }
 
         await conn.commit();
 
-        const totalProcesados = updatedCount + createdCount;
-        const porcentajeActualizacion = totalProcesados > 0 ? (updatedCount / totalProcesados) * 100 : 0;
-
         res.status(200).json({
             success: true,
-            mensaje: `Se han procesado ${transportes.length} transportes: ${updatedCount} actualizados y ${createdCount} creados.`,
+            mensaje: `Se procesaron ${transportes.length} transportes: ${updatedCount} actualizados y ${createdCount} creados.`,
             updatedCount,
             createdCount,
-            porcentajeActualizacion: porcentajeActualizacion.toFixed(2) // Redondear a dos decimales
+            porcentajeActualizacion: ((updatedCount / transportes.length) * 100).toFixed(2)
         });
-
     } catch (error) {
-        if (conn) {
-            await conn.rollback();
-        }
-
-        console.error('Error al procesar lote de transportes:', error);
+        if (conn) await conn.rollback();
+        console.error("Error al procesar lote de transportes:", error);
 
         res.status(500).json({
             success: false,
             mensaje: "Error al procesar los transportes",
-            error: error.message,
-            detalles: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            error: error.message
         });
-
     } finally {
-        if (conn) {
-            try {
-                await conn.end();
-            } catch (err) {
-                console.error('Error al cerrar la conexión:', err);
-            }
-        }
+        if (conn) await conn.end();
     }
 });

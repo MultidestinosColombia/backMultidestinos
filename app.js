@@ -29,6 +29,7 @@ const pasajero = require('./routes/pasajero.js');
 const impuestosLiq = require('./routes/impuestosLiq.js');
 const impuestosCot = require('./routes/impuestos_cot.js');
 const costosHotel = require('./routes/costosHotel.js');
+const ControlLiquidacion = require('./routes/ControlLiquidacion.js');
 
 // Usa las rutas
 costosHotel(app);
@@ -45,6 +46,7 @@ liquidacion(app);
 pasajero(app);
 impuestosLiq(app);
 impuestosCot(app);
+ControlLiquidacion(app);
 
 // Ruta de inicio de sesión
 app.post('/', async (req, res) => {
