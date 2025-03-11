@@ -43,6 +43,7 @@ router.get("/proveedores", (req, res) => fetchTableData(req, res, "proveedores")
 
 //------------------------------------------------------------------------ Backend del Excel --------------------------------------------------------------------------------//
 
+
 // 🔹 1️⃣ Descargar Excel con formato mejorado
 router.get("/descargar-excel", async (req, res) => {
     let conn;
@@ -260,21 +261,34 @@ router.get("/descargar-excel", async (req, res) => {
                 });
             }
             
-            // Auto-ajustar el ancho de las columnas según el contenido
+            // Auto-ajustar el ancho de las columnas según el contenido (versión mejorada)
             worksheet.columns.forEach(column => {
-                const lengths = worksheet.getColumn(column.key).values
-                    .filter(Boolean)
-                    .map(v => v.toString().length);
+                let maxLength = 0;
                 
-                // Añadir la longitud del encabezado
-                if (column.header) {
-                    lengths.push(column.header.length + 2); // +2 para espacio extra
-                }
+                // Revisar todas las celdas en la columna, incluyendo el encabezado
+                worksheet.getColumn(column.key).eachCell({ includeEmpty: false }, function(cell) {
+                    // Obtener el valor de la celda como texto
+                    const cellValue = cell.value !== null && cell.value !== undefined 
+                        ? String(cell.value) 
+                        : '';
+                        
+                    // Considerar el formato del texto (negrita requiere más espacio)
+                    const isBold = cell.font && cell.font.bold;
+                    const lengthFactor = isBold ? 1.2 : 1;
+                    
+                    // Calcular longitud teniendo en cuenta formato
+                    const length = (cellValue.length * lengthFactor);
+                    
+                    // Actualizar longitud máxima si es necesario
+                    if (length > maxLength) {
+                        maxLength = length;
+                    }
+                });
                 
-                // Encontrar la longitud máxima
-                const maxLength = Math.max(...lengths.filter(l => typeof l === 'number' && !isNaN(l)) || [10]);
+                // Añadir espacio adicional para el formato de la columna
+                maxLength += 4; // Espacio para el padding interno y bordes
                 
-                // Limitar el ancho máximo de columna (evitar columnas demasiado anchas)
+                // Limitar el ancho máximo y mínimo (evitar columnas demasiado anchas o estrechas)
                 const clampedWidth = Math.min(Math.max(maxLength, 10), 50);
                 column.width = clampedWidth;
             });
@@ -291,6 +305,1229 @@ router.get("/descargar-excel", async (req, res) => {
                 records: worksheet.rowCount - 1, // Restar fila de encabezado
                 updated: lastUpdated[0].fecha
             });
+
+
+//--------------------------------------------------------------------------------- Formulas del Excel  -------------------------------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------- Formulas del la Hoja Costos  ---------------------------------------------------------------------------------------------------//
+            
+            // Para la hoja "Costos"
+            if (sheetName === "Costos") {
+                worksheet.getColumn('Q').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `J${rowNumber}+O${rowNumber}+P${rowNumber}` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('R').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `K${rowNumber}+O${rowNumber}+P${rowNumber}` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('S').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `L${rowNumber}+O${rowNumber}+P${rowNumber}` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('T').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `M${rowNumber}+O${rowNumber}+P${rowNumber}` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('U').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `N${rowNumber}+O${rowNumber}+P${rowNumber}` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AG').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AL${rowNumber}-Q${rowNumber}` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AH').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AM${rowNumber}-R${rowNumber}` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AI').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AN${rowNumber}-S${rowNumber}` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AJ').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AO${rowNumber}-T${rowNumber}` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AK').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AP${rowNumber}-U${rowNumber}` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AL').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `Q${rowNumber}/0.77` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AM').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `R${rowNumber}/0.77` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AN').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `S${rowNumber}/0.77` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AO').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `T${rowNumber}/0.77` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AP').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `U${rowNumber}/0.77` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AQ').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AG${rowNumber}*0.19` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AR').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AH${rowNumber}*0.19` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AS').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AI${rowNumber}*0.19` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AT').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AJ${rowNumber}*0.19` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AU').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AK${rowNumber}*0.19` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AV').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `V${rowNumber}+W${rowNumber}+AB${rowNumber}+AL${rowNumber}+AQ${rowNumber}` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AW').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `V${rowNumber}+X${rowNumber}+AC${rowNumber}+AM${rowNumber}+AR${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AX').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `V${rowNumber}+Y${rowNumber}+AD${rowNumber}+AN${rowNumber}+AS${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AY').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `V${rowNumber}+Z${rowNumber}+AE${rowNumber}+AO${rowNumber}+AT${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos") {
+                worksheet.getColumn('AZ').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `V${rowNumber}+AA${rowNumber}+AF${rowNumber}+AP${rowNumber}+AU${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+
+
+//----------------------------------------------------------------------------- Formulas del la Hoja Costos Unico  ---------------------------------------------------------------------------------------------------//
+
+            // Para la hoja "Costos Único"
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AB').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AG${rowNumber}-L${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AC').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AH${rowNumber}-M${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AD').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AI${rowNumber}-N${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AE').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AJ${rowNumber}-O${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AF').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AK${rowNumber}-P${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AG').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `L${rowNumber}/0.77`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AH').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `M${rowNumber}/0.77`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AI').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `N${rowNumber}/0.77`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AJ').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `O${rowNumber}/0.77`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AK').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `P${rowNumber}/0.77`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AL').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AB${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AM').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AC${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AN').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AD${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AO').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AE${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AP').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `AF${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AR').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `Q${rowNumber}+S${rowNumber}+X${rowNumber}+AH${rowNumber}+AM${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AS').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `Q${rowNumber}+T${rowNumber}+Y${rowNumber}+AI${rowNumber}+AN${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AT').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `Q${rowNumber}+U${rowNumber}+Z${rowNumber}+AJ${rowNumber}+AO${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Costos Único") {
+                worksheet.getColumn('AU').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `Q${rowNumber}+V${rowNumber}+AA${rowNumber}+AK${rowNumber}+AP${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+
+//----------------------------------------------------------------------------- Formulas del la Hoja Noche 1  ---------------------------------------------------------------------------------------------------//
+            // Para la hoja "Noches 1"
+            if (sheetName === "Noches 1") {
+                worksheet.getColumn('AE').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `O${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 1") {
+                worksheet.getColumn('AF').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `P${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 1") {
+                worksheet.getColumn('AG').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `Q${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 1") {
+                worksheet.getColumn('AH').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `R${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 1") {
+                worksheet.getColumn('AI').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `S${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 1") {
+                worksheet.getColumn('AJ').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `T${rowNumber}+Y${rowNumber}+Z${rowNumber}+AE${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 1") {
+                worksheet.getColumn('AK').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `U${rowNumber}+Y${rowNumber}+AA${rowNumber}+AF${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 1") {
+                worksheet.getColumn('AL').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `V${rowNumber}+Y${rowNumber}+AB${rowNumber}+AG${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 1") {
+                worksheet.getColumn('AM').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `W${rowNumber}+Y${rowNumber}+AC${rowNumber}+AH${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 1") {
+                worksheet.getColumn('AN').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `X${rowNumber}+Y${rowNumber}+AD${rowNumber}+AI${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+//----------------------------------------------------------------------------- Formulas del la Hoja Noche 2  ---------------------------------------------------------------------------------------------------//
+
+            // Para la hoja "Noches 2"
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('E').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!E${rowNumber}*2` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('F').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!F${rowNumber}*2` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('G').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!G${rowNumber}*2` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('H').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!H${rowNumber}*2` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('I').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!I${rowNumber}*2` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('AE').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `O${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('AF').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `P${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('AG').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `Q${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('AH').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `R${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('AI').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `S${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('AJ').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `T${rowNumber}+Y${rowNumber}+Z${rowNumber}+AE${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('AK').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `U${rowNumber}+Y${rowNumber}+AA${rowNumber}+AF${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('AL').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `V${rowNumber}+Y${rowNumber}+AB${rowNumber}+AG${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('AM').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `W${rowNumber}+Y${rowNumber}+AC${rowNumber}+AH${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 2") {
+                worksheet.getColumn('AN').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `X${rowNumber}+Y${rowNumber}+AD${rowNumber}+AI${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            
+//----------------------------------------------------------------------------- Formulas del la Hoja Noche 3  ---------------------------------------------------------------------------------------------------//
+
+            // Para la hoja "Noches 3"
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('E').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!E${rowNumber}*3` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('F').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!F${rowNumber}*3` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('G').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!G${rowNumber}*3` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('H').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!H${rowNumber}*3` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('I').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!I${rowNumber}*3` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('AE').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `O${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('AF').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `P${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('AG').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `Q${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('AH').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `R${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('AI').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `S${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('AJ').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `T${rowNumber}+Y${rowNumber}+Z${rowNumber}+AE${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('AK').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `U${rowNumber}+Y${rowNumber}+AA${rowNumber}+AF${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('AL').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `V${rowNumber}+Y${rowNumber}+AB${rowNumber}+AG${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('AM').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `W${rowNumber}+Y${rowNumber}+AC${rowNumber}+AH${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 3") {
+                worksheet.getColumn('AN').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `X${rowNumber}+Y${rowNumber}+AD${rowNumber}+AI${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+//----------------------------------------------------------------------------- Formulas del la Hoja Noche 4  ---------------------------------------------------------------------------------------------------//
+
+            // Para la hoja "Noches 4"
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('E').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!E${rowNumber}*4` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('F').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!F${rowNumber}*4` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('G').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!G${rowNumber}*4` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('H').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!H${rowNumber}*4` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('I').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `'Noches 1'!I${rowNumber}*4` };
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('AE').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `O${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('AF').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `P${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('AG').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `Q${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('AH').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `R${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('AI').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `S${rowNumber}*0.19`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('AJ').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `T${rowNumber}+Y${rowNumber}+Z${rowNumber}+AE${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('AK').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `U${rowNumber}+Y${rowNumber}+AA${rowNumber}+AF${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('AL').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `V${rowNumber}+Y${rowNumber}+AB${rowNumber}+AG${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('AM').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `W${rowNumber}+Y${rowNumber}+AC${rowNumber}+AH${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+            if (sheetName === "Noches 4") {
+                worksheet.getColumn('AN').eachCell((cell, rowNumber) => {
+                    if (rowNumber > 1) { // Saltar el encabezado
+                        // Definir la fórmula
+                        cell.value = { formula: `X${rowNumber}+Y${rowNumber}+AD${rowNumber}+AI${rowNumber}`};
+                        
+                        cell.numFmt = '0';
+
+                    }
+                });
+            }
+
+//------------------------------------------------------------------------- Formulas del la Hoja Noche Adicional  -----------------------------------------------------------------------------------------------//
+
+
+
+
+
+
+
+
+
+            //--------------------------------------------------------------------------------- Formulas del Excel  -------------------------------------------------------------------------------------------------------------//
         }
         
         // Añadir los datos a la hoja de resumen
@@ -341,6 +1578,10 @@ router.get("/descargar-excel", async (req, res) => {
         res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         
         // Generar y enviar el archivo
+        workbook.calcProperties = {
+            fullCalcOnLoad: true
+        };
+
         await workbook.xlsx.write(res);
         res.end();
         
@@ -368,6 +1609,7 @@ function formatColumnHeader(columnName) {
         
     return formatted;
 }
+
 
 // 🔹 2️⃣ Subir y procesar el archivo Excel
 router.post("/subir-excel", upload.single("file"), async (req, res) => {
@@ -405,45 +1647,183 @@ router.post("/subir-excel", upload.single("file"), async (req, res) => {
             ;
             if (!worksheet) continue;
 
-            
-            
-        
             const tableName = queries[sheetName];
+
+            // Obtener estructura de la tabla para verificar los tipos de columnas
+            const [tableInfo] = await conn.query(`DESCRIBE ??`, [tableName]);
+            console.log(`Estructura de la tabla ${tableName}:`, tableInfo);
+            
+            // Crear un mapa de nombres de columnas a tipos de datos
+            const columnTypes = {};
+            tableInfo.forEach(column => {
+                columnTypes[column.Field.toLowerCase()] = {
+                    type: column.Type,
+                    isNumeric: column.Type.includes('int') || 
+                               column.Type.includes('decimal') || 
+                               column.Type.includes('float') || 
+                               column.Type.includes('double'),
+                    allowNull: column.Null === 'YES',
+                    defaultValue: column.Default
+                };
+            });
+
+
         
             await conn.query(`DELETE FROM ??`, [tableName]); // 🔥 Limpiar datos anteriores antes de insertar nuevos
-            
         
-            const columns = worksheet.getRow(1).values.slice(1).map(col => col.replace(/\s+/g, '_'));
-            console.log("Columnas obtenidas después del reemplazo:", columns); // Verifica los nombres en consola
+            // Obtener nombres de columnas del Excel
+            const headerRow = worksheet.getRow(1);
+            const excelColumns = [];
+            headerRow.eachCell({ includeEmpty: false }, (cell, colNumber) => {
+                if (cell.value) {
+                    let columnName = typeof cell.value === 'string' ? 
+                        cell.value.replace(/\s+/g, '_') : 
+                        String(cell.value).replace(/\s+/g, '_');
+                    excelColumns[colNumber] = columnName;
+                }
+            });
+            
+            console.log("Columnas obtenidas de Excel:", excelColumns);
 
+            // Filtrar para obtener solo columnas existentes en la base de datos
+            const validColumns = [];
+            for (const excelCol of excelColumns) {
+                if (!excelCol) continue;
+                
+                // Buscar coincidencia en la base de datos (ignorando mayúsculas/minúsculas)
+                const matchingDbColumn = tableInfo.find(dbCol => 
+                    dbCol.Field.toLowerCase() === excelCol.toLowerCase());
+                
+                if (matchingDbColumn) {
+                    // Usar el nombre exacto de la columna de la BD para evitar problemas de mayúsculas
+                    validColumns.push(matchingDbColumn.Field);
+                }
+            }
+            
+            console.log("Columnas válidas para inserción:", validColumns);
+            
+            if (validColumns.length === 0) {
+                console.log(`⚠️ No se encontraron columnas válidas en la hoja ${sheetName}`);
+                continue;
+            }            
         
             const values = [];
         
-            worksheet.eachRow((row, rowNumber) => {
-                if (rowNumber === 1) return; // Saltar los encabezados
-                const rowData = row.values.slice(1).map(cell => {
-                    if (cell && typeof cell === "object" && cell.formula) {
-                        return cell.result !== undefined ? cell.result : null; // Obtiene el resultado de la fórmula
-                    }
-                    return cell;
-                });
-                values.push(rowData);
-            });
-        
-            if (values.length > 0) {
-                const placeholders = values.map(() => `(${columns.map(() => "?").join(", ")})`).join(", ");
-                const query = `INSERT INTO ${tableName} (\`${columns.join("`, `")}\`) VALUES ${placeholders}`;
-                await conn.query(query, values.flat());
-            }
-        }
-        
+            // Procesar cada fila de datos
+                        for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) {
+                            const row = worksheet.getRow(rowNumber);
+                            
+                            // Verificar si la fila tiene datos
+                            let hasData = false;
+                            row.eachCell({ includeEmpty: false }, () => {
+                                hasData = true;
+                            });
+                            
+                            if (!hasData) continue; // Saltar filas vacías
+                            
+                            const rowData = [];
+                            let rowIsValid = true;
+                            
+                            // Para cada columna válida, obtener el valor correspondiente
+                            for (const dbColumn of validColumns) {
+                                // Encontrar el índice de la columna en el Excel
+                                const colIndex = excelColumns.findIndex(col => 
+                                    col && col.toLowerCase() === dbColumn.toLowerCase());
+                                
+                                if (colIndex === -1) {
+                                    // Si la columna no existe en Excel pero es requerida en BD
+                                    const columnInfo = columnTypes[dbColumn.toLowerCase()];
+                                    if (!columnInfo.allowNull && columnInfo.defaultValue === null) {
+                                        console.log(`⚠️ La columna ${dbColumn} es obligatoria pero no está en Excel. Fila ${rowNumber} inválida.`);
+                                        rowIsValid = false;
+                                        break;
+                                    }
+                                    // Si permite NULL o tiene valor por defecto, usamos null
+                                    rowData.push(null);
+                                    continue;
+                                }
+                                
+                                const cell = row.getCell(colIndex);
+                                let value = null;
+                                
+                                // Extraer valor según el tipo de celda
+                                if (cell && cell.value !== null && cell.value !== undefined) {
+                                    if (cell.type === ExcelJS.ValueType.Formula || 
+                                        cell.type === ExcelJS.ValueType.SharedFormula) {
+                                        value = cell.result !== undefined ? cell.result : null;
+                                    } else {
+                                        value = cell.value;
+                                    }
+                                }
+                                
+                                // Convertir tipos de datos si es necesario
+                                const columnInfo = columnTypes[dbColumn.toLowerCase()];
+                                if (columnInfo && columnInfo.isNumeric && value !== null) {
+                                    // Si el valor es un string, eliminar comas y convertir a número
+                                    if (typeof value === 'string') {
+                                        value = value.replace(/,/g, '');
+                                        value = parseFloat(value);
+                                    }
 
-        fs.unlinkSync(req.file.path); // 🗑️ Eliminar el archivo después de procesarlo
-        res.send("Datos actualizados correctamente.");
-    } catch (error) {
-        console.error("Error procesando Excel:", error);
-        res.status(500).send("Error al procesar el archivo.");
-    } finally {
-        if (conn) await conn.end();
-    }
-});
+                                    // 🔹 Si la columna es ENTERA, redondear el valor
+                                    if (columnInfo.type.includes('int')) {
+                                        value = Math.round(value);
+                                    }
+
+                                    // Si el valor no es un número válido, establecer como 0 o null
+                                    if (isNaN(value)) {
+                                        value = columnInfo.allowNull ? null : 0;
+                                    }
+                                }
+
+                                
+                                // Verificar si la columna no permite NULL
+                                if (value === null && !columnInfo.allowNull) {
+                                    if (dbColumn.toLowerCase() === 'id' && tableName === 'costos') {
+                                        // Para la columna ID en la tabla costos, generamos un valor secuencial
+                                        // basado en el número de fila (asumiendo que es un autoincrement)
+                                        value = rowNumber - 1; // Ajustar según tu lógica
+                                    } else {
+                                        // Para otras columnas que no pueden ser NULL, usamos un valor por defecto basado en su tipo
+                                        if (columnInfo.isNumeric) value = 0;
+                                        else value = '';
+                                        
+                                        console.log(`⚠️ Valor por defecto para columna requerida ${dbColumn}: ${value}`);
+                                    }
+                                }
+                                
+                                rowData.push(value);
+                            }
+                            
+                            if (rowIsValid) {
+                                values.push(rowData);
+                            }
+                        }
+        
+                       if (values.length > 0) {
+                        // Crear consulta parametrizada
+                        const placeholders = values.map(() => 
+                            `(${validColumns.map(() => '?').join(', ')})`).join(', ');
+                        
+                        const query = `INSERT INTO ${tableName} (\`${validColumns.join('`, `')}\`) VALUES ${placeholders}`;
+                        
+                        // Aplanar el array de valores para la consulta parametrizada
+                        const flatValues = values.flat();
+                        
+                        console.log(`Ejecutando consulta INSERT para ${values.length} filas...`);
+                        await conn.query(query, flatValues);
+                        console.log(`✅ Insertados ${values.length} registros en ${tableName}`);
+                    } else {
+                        console.log(`⚠️ No hay datos para insertar en ${tableName}`);
+                    }
+                }
+                
+                fs.unlinkSync(req.file.path); // 🗑️ Eliminar el archivo después de procesarlo
+                res.send("Datos actualizados correctamente.");
+            } catch (error) {
+                console.error("Error procesando Excel:", error);
+                res.status(500).send(`Error al procesar el archivo: ${error.message}`);
+            } finally {
+                if (conn) await conn.end();
+            }
+        });
