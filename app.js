@@ -16,7 +16,7 @@ app.use(cors());
 
 // Rutas
 const user = require('./routes/user.js');
-const cañoCristal = require('./routes/CañoCristal.js');
+const canoCristal = require('./routes/CanoCristal.js');
 const habitacionCotizacion = require('./routes/habitacionCotizacion.js');
 const planes = require('./routes/planes.js');
 const tiquete = require('./routes/tiquete.js');
@@ -42,7 +42,7 @@ cotizacion(app);
 transporte(app);
 habitacionCotizacion(app);
 tiquete(app);
-cañoCristal(app);
+canoCristal(app);
 liquidacion(app);
 pasajero(app);
 impuestosLiq(app);
