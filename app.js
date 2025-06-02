@@ -31,9 +31,11 @@ const impuestosCot = require('./routes/impuestos_cot.js');
 const costosHotel = require('./routes/costosHotel.js');
 const ControlLiquidacion = require('./routes/ControlLiquidacion.js');
 const Liquidacion_Costos = require('./routes/Liquidacion_Costos.js'); // Renombrado
+const Home = require('./routes/Home.js');
 
 // Usar rutas
 costosHotel(app);
+Home(app);
 user(app);
 planes(app);
 clientes(app);

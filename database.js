@@ -5,11 +5,11 @@ async function connect() {
   try {
     const connection = await mysql.createConnection({
       //host: 'turntable.proxy.rlwy.net',
-      host: 'trolley.proxy.rlwy.net', 
+      host: 'yamanote.proxy.rlwy.net', 
       user: 'root', 
-      password: "FXBfTaWLTaUqrlyztrflJqjhxvqTueuf", 
-      database: 'MultidestinosExpress', 
-      port: '45646'
+      password: "YYwdRzSKQwQreRPDQOBmqVAiGZjnkOUH", 
+      database: 'MULTIDESTINOS_EXPRESS', 
+      port: '36788'
     });
     return connection;
   } catch (error) {
