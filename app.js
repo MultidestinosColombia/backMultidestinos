@@ -18,6 +18,7 @@ app.use(cors());
 const user = require('./routes/user.js');
 const canoCristal = require('./routes/CanoCristal.js');
 const habitacionCotizacion = require('./routes/habitacionCotizacion.js');
+const PdfCotizaciones  = require('./routes/PDF_Cotizaciones.js');
 const planes = require('./routes/planes.js');
 const clientes = require('./routes/clientes.js');
 const cotizacion = require('./routes/cotizacion.js');
@@ -27,13 +28,14 @@ const impuestosLiq = require('./routes/impuestosLiq.js');
 const impuestosCot = require('./routes/impuestos_cot.js');
 const costosHotel = require('./routes/costosHotel.js');
 const ControlLiquidacion = require('./routes/ControlLiquidacion.js');
-const Liquidacion_Costos = require('./routes/Liquidacion_Costos.js'); // Renombrado
+const Liquidacion_Costos = require('./routes/Liquidacion_Costos.js'); 
 const Home = require('./routes/Home.js');
 
 // Usar rutas
 costosHotel(app);
 Home(app);
 user(app);
+PdfCotizaciones (app);
 planes(app);
 clientes(app);
 cotizacion(app);

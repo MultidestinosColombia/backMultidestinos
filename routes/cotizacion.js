@@ -167,5 +167,166 @@ router.post('/lista', async (req, res) => {
 });
 
 
+router.post('/Guardar_Cotizacion', async (req, res) => {
+  let conn;
+  try {
+    conn = await connect();
+    const body = req.body;
+    
+    // Función auxiliar para formatear fechas
+    const formatDate = (dateString) => {
+      if (!dateString) return null;
+      const date = new Date(dateString);
+      return date.toISOString().slice(0, 19).replace('T', ' ');
+    };
+
+    // Función auxiliar para formatear horas
+    const formatTime = (timeString) => {
+      if (!timeString) return null;
+      // Si ya está en formato HH:MM:SS, devolverlo tal como está
+      if (timeString.includes(':') && timeString.length >= 5) {
+        return timeString.length === 5 ? `${timeString}:00` : timeString;
+      }
+      return null;
+    };
+
+    // Calcular totales de pasajeros
+    const totalAdultos = body.habitaciones?.reduce((total, h) => total + (parseInt(h.adultos) || 0), 0) || 0;
+    const totalNinos = body.habitaciones?.reduce((total, h) => total + (parseInt(h.ninos) || 0), 0) || 0;
+    const totalPasajeros = totalAdultos + totalNinos;
+
+    // Procesar escalas para el campo extra2 (escalas complejas)
+    const escalasCompletas = {
+      ida: body.escalas?.ida || null,
+      regreso: body.escalas?.regreso || null,
+      idaYRegreso: body.escalas?.idaYRegreso || null
+    };
+
+    // Procesar opciones adicionales
+    const opcionesAdicionales = {
+      asesorExterno: body.opciones?.asesorExterno || { activo: false, asesor: null },
+      nocheAdicional: body.opciones?.nocheAdicional || { activo: false, motivo: null },
+      suplemento: body.opciones?.suplemento || { activo: false, tipo: null }
+    };
+
+    const cotizacion = {
+      // Información básica del viaje
+      salida: body.ciudadSalida || '',
+      destino: body.destino || '',
+      nombrePrograma: body.programa || '',
+      hotel: body.hotel || '',
+      noches: parseInt(body.duracionNoches) || 0,
+      
+      // Información de pasajeros
+      totalAdultos: totalAdultos,
+      totalNinos: totalNinos,
+      totalPasajeros: totalPasajeros,
+      
+      // Información del cliente
+      correoCliente: body.correoCliente || '',
+      cliente: body.cliente || '',
+      correo: body.correoCliente || '', // Campo duplicado para compatibilidad
+      telefono: body.telefono || '',
+      
+      // Fechas
+      fechaCreacion: formatDate(body.fechaCreacion) || formatDate(new Date().toISOString()),
+      fechaInicio: formatDate(body.fechaInicio),
+      fechaFin: formatDate(body.fechaFin),
+      
+      // Vuelo de ida
+      aerolineaIda: body.vueloIda?.aerolinea || '',
+      vueloIda: body.vueloIda?.numeroVuelo || '',
+      horaSalidaIda: formatTime(body.vueloIda?.horaSalida),
+      horaLlegadaIda: formatTime(body.vueloIda?.horaLlegada),
+      claseIda: body.vueloIda?.clase || '',
+      
+      // Vuelo de vuelta
+      aerolineaVuelta: body.vueloVuelta?.aerolinea || '',
+      vueloVuelta: body.vueloVuelta?.numeroVuelo || '',
+      horaSalidaVuelta: formatTime(body.vueloVuelta?.horaSalida),
+      horaLlegadaVuelta: formatTime(body.vueloVuelta?.horaLlegada),
+      claseVuelta: body.vueloVuelta?.clase || '',
+      
+      // Escalas de ida
+      aerolineaEscalaIda: body.escalas?.ida?.aerolinea || '',
+      vueloEscalaIda: body.escalas?.ida?.numeroVuelo || '',
+      horaSalidaEscalaIda: formatTime(body.escalas?.ida?.horaSalida),
+      horaLlegadaEscalaIda: formatTime(body.escalas?.ida?.horaLlegada),
+      claseEscalaIda: body.escalas?.ida?.clase || '',
+      
+      // Escalas de vuelta
+      aerolineaEscalaVuelta: body.escalas?.regreso?.aerolinea || '',
+      vueloEscalaVuelta: body.escalas?.regreso?.numeroVuelo || '',
+      horaSalidaEscalaVuelta: formatTime(body.escalas?.regreso?.horaSalida),
+      horaLlegadaEscalaVuelta: formatTime(body.escalas?.regreso?.horaLlegada),
+      claseEscalaVuelta: body.escalas?.regreso?.clase || '',
+      
+      // Información adicional
+      suplemento: body.opciones?.suplemento?.tipo || '',
+      transfer: body.transferencia || '',
+      transferencia: body.transferencia || '', // Campo duplicado para compatibilidad
+      asesorExterno: body.opciones?.asesorExterno?.asesor || '',
+      nochesAdicionales: body.opciones?.nocheAdicional?.motivo || '',
+      
+      // Precios y valores
+      valoresExtra: parseInt(body.valoresExtra) || 0,
+      precioTrans: body.precioTransferencia || '',
+      
+      // Incluye y no incluye
+      incluye: body.incluye || '',
+      noIncluye: body.noIncluye || '',
+      
+      // Estado y metadatos
+      status: body.estado || 'pendiente',
+      tipo: body.tipo || 'normales',
+      creadorCotizacion: body.creadorCotizacion || '',
+      
+      // Campos adicionales en JSON
+      extra1: JSON.stringify(body.habitaciones || []), // Información de habitaciones
+      extra2: JSON.stringify(escalasCompletas), // Información completa de escalas
+      otros: JSON.stringify(opcionesAdicionales), // Opciones adicionales completas
+      
+      // Campos adicionales que podrían existir en la tabla
+      numeroHabitaciones: parseInt(body.numeroHabitaciones) || body.habitaciones?.length || 1,
+      observaciones: body.observaciones || '',
+      descuentos: body.descuentos || '',
+      impuestos: body.impuestos || '',
+      total: body.total || 0,
+      moneda: body.moneda || 'COP'
+    };
+
+    // Ejecutar la inserción
+    const [result] = await conn.query("INSERT INTO cotizacion SET ?", [cotizacion]);
+    
+    console.log('Cotización guardada exitosamente:', {
+      id: result.insertId,
+      totalCampos: Object.keys(cotizacion).length,
+      cliente: cotizacion.cliente,
+      destino: cotizacion.destino
+    });
+
+    res.status(201).json({ 
+      success: true, 
+      message: 'Cotización guardada correctamente', 
+      id: result.insertId,
+      totalCampos: Object.keys(cotizacion).length
+    });
+    
+  } catch (error) {
+    console.error('Error al guardar cotización:', error);
+    
+    // Log detallado del error para debugging
+    console.error('Datos recibidos:', JSON.stringify(req.body, null, 2));
+    
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error al guardar cotización', 
+      error: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  } finally {
+    if (conn) await conn.end();
+  }
+});
 
 
