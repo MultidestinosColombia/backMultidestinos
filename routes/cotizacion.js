@@ -18,7 +18,7 @@ router.post('/cotizaciones', async (req, res) => {
         tabla = 'cotizacion_caño_cristal';
         break;
       case 'personalizadas':
-        tabla = 'habitacionescotizacion';
+        tabla = 'cotizacion_personalizadas';
         break;
       default:
         return res.status(400).json({ error: 'Tipo de cotización inválido' });
@@ -38,10 +38,25 @@ router.post('/cotizaciones', async (req, res) => {
 
 
 router.post('/lista', async (req, res) => {
-  const { destino, hotel, cliente } = req.body;
+  const { destino, hotel, cliente, asesor, start, end } = req.body;
 
   try {
     const connection = await connect();
+
+    // 0. llamado de usuarios con el rol Asesor
+    if (asesor === true) {
+      const [asesores] = await connection.query(`
+        SELECT DISTINCT nombreCompleto
+        FROM usuarios
+        WHERE rol = 'Asesor' AND nombreCompleto IS NOT NULL AND nombreCompleto != ''
+        ORDER BY nombreCompleto
+      `);
+
+      const nombresAsesores = asesores.map(u => u.nombreCompleto);
+      return res.json({ asesores: nombresAsesores });
+    }
+
+
 
     // 0. Si se pide lista de clientes
     if (cliente === true) {
@@ -57,20 +72,56 @@ router.post('/lista', async (req, res) => {
     }
 
     // 0.1. Si se pide el correo de un cliente específico
-      if (typeof cliente === 'string' && cliente.trim() !== '') {
-        const [resultado] = await connection.query(`
-          SELECT correo
-          FROM clientes
-          WHERE nombre = ?
-          LIMIT 1
-        `, [cliente]);
+    if (typeof cliente === 'string' && cliente.trim() !== '') {
+      const [resultado] = await connection.query(`
+        SELECT correo
+        FROM clientes
+        WHERE nombre = ?
+        LIMIT 1
+      `, [cliente]);
 
-        if (resultado.length > 0) {
-          return res.json({ correo: resultado[0].correo });
-        } else {
-          return res.json({ correo: null });
-        }
+      if (resultado.length > 0) {
+        return res.json({ correo: resultado[0].correo });
+      } else {
+        return res.json({ correo: null });
       }
+    }
+    
+    // 0.3.  devolver cantidad de noches desde columna
+    if (req.body.soloNoches === true && hotel) {
+      const [resultado] = await connection.query(`
+        SELECT DISTINCT noches
+        FROM hoteles
+        WHERE hotel = ?
+        ORDER BY noches
+      `, [hotel]);
+
+      if (resultado.length > 0) {
+        const nochesDisponibles = resultado.map(row => row.noches);
+        return res.json({ noches: nochesDisponibles });
+      } else {
+        return res.json({ noches: [] });
+      }
+    }
+
+
+
+    // 0.2. Si vienen fechas y destino → devolver programas desde `hoteles`
+    if (start && end && destino) {
+      const [programas] = await connection.query(`
+        SELECT nombrePrograma, COUNT(*) AS total
+        FROM hoteles
+        WHERE destino = ?
+          AND FechaInicio <= ?
+          AND FechaFin >= ?
+        GROUP BY nombrePrograma
+        ORDER BY total DESC
+      `, [destino, end, start]);
+
+      return res.json({ programas });
+    }
+
+    
 
     // 1. Si no hay destino ni hotel → devolver destinos únicos
     if (!destino && !hotel) {
@@ -114,6 +165,7 @@ router.post('/lista', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener datos' });
   }
 });
+
 
 
 
